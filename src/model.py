@@ -9,6 +9,7 @@ class Model:
     hidden_unit_num = (10, 5, 4)
     params = None
     fitness = 0
+    time = 0
     generation = 0
     specimen = 0
 

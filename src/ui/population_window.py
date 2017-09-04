@@ -4,6 +4,8 @@ from test_window import TestWindow
 
 
 class PopulationWindow(QWidget):
+    test = None
+
     def __init__(self):
         super().__init__()
 
@@ -24,19 +26,27 @@ class PopulationWindow(QWidget):
             btn_show.clicked.connect(self.startShow)
             grid.addWidget(btn_show, int((i * 2 + 1) / col), (i * 2 + 1) % col)
 
-    def startTest(self):
+    def get_specimen(self):
         sender = self.sender()
         specimen = int(sender.text())
         model = self.population[specimen]
-        test = TestWindow(model)
-        test.test()
+        return model
+
+    def startTest(self):
+        if self.test is not None:
+            self.test.stop()
+
+        self.test = TestWindow(self.get_specimen())
+        print(str(self.test.test()))
+        self.test = None
 
     def startShow(self):
-        sender = self.sender()
-        specimen = int(sender.text())
-        model = self.population[specimen]
-        test = TestWindow(model)
-        test.show()
+        if self.test is not None:
+            self.test.stop()
+
+        self.test = TestWindow(self.get_specimen())
+        self.test.show()
+        self.test = None
 
     def initUI(self):
 

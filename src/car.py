@@ -4,9 +4,9 @@ import numpy as np
 
 class Car:
 
-    width = 10
-    length = 20
-    velocity = 50
+    width = 15
+    length = 30
+    velocity = 0
     steering = 0
     running = False
     hit = False

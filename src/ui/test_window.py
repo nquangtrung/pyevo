@@ -21,43 +21,29 @@ tracks = [
 
 class TestWindow:
     model = None
+    testing = False
 
     def __init__(self, model):
         self.model = model
         pygame.init()
 
+    def stop(self):
+        self.testing = False
+
     def test(self):
-        model = self.model
-
-        track_id = 1
-        track = Track(tracks[track_id]["filepath"], tracks[track_id]["start_point"])
-        car = Car()
-        track.add_car(car)
-        driver = NNDriver(model)
-        driver.drive(car)
-        s = time.time()
-        finish = False
-        while 1:
-            diff = time.time() - s
-            s = time.time()
-
-            # Update and draw the new state of the car
-            car.update(diff)
-
-            # Check the game's logic
-            car.check_hit(None)
-            driver.see(None)
-            finish = driver.control()
-
-            if finish:
-                model.fitness = driver.fitness
-                break
-
-        print("Final fitness: " + str(model.fitness))
+        return self.execute(show=False)
 
     def show(self):
+        self.execute(show=True)
+
+    def execute(self, show = True):
+        self.testing = True
+
         model = self.model
-        screen = pygame.display.set_mode((480, 480))
+        if show:
+            screen = pygame.display.set_mode((480, 480))
+        else:
+            screen = None
 
         track_id = 1
         track = Track(tracks[track_id]["filepath"], tracks[track_id]["start_point"])
@@ -68,26 +54,32 @@ class TestWindow:
         s = time.time()
 
         finish = False
-        while 1:
+        while self.testing:
             diff = time.time() - s
             s = time.time()
-
-            screen.fill(black)
+            if show:
+                screen.fill(black)
 
             # Update and draw the new state of the car
             car.update(diff)
-            car.draw(screen, red, green)
+            if show:
+                car.draw(screen, red, green)
 
             # Check the game's logic
             car.check_hit(screen)
             driver.see(screen)
             finish = driver.control()
 
-            myfont = pygame.font.SysFont("monospace", 15)
-            label = myfont.render("Generation #" + str(model.generation) + " Specimen #" + str(model.specimen), 1, (0, 255, 0))
-            screen.blit(label, (0, 100))
+            if show:
+                myfont = pygame.font.SysFont("monospace", 15)
+                label = myfont.render("Generation #" + str(model.generation) + " Specimen #" + str(model.specimen), 1, (0, 255, 0))
+                screen.blit(label, (0, 100))
 
-            pygame.display.flip()
+                pygame.display.flip()
 
             if finish:
+                model.fitness = driver.fitness
+                model.time = driver.time
                 break
+
+        return model.fitness, model.time

@@ -49,7 +49,7 @@ class MainWindow(QWidget):
 
     def initPopulation(self):
         population = []
-        for i in range(0, 20):
+        for i in range(0, 100):
             population.append(Model())
             model = Model()
             model.generation = 0
