@@ -31,22 +31,19 @@ class Car:
         self.steering += deg
 
     def update(self, time):
-        len = self.velocity * time
+        length = self.velocity * time
         if not self.running:
-            len = 0
+            length = 0
 
         theta = self.steering * np.pi / 180
 
-        len_y = np.cos(theta) * len
-        len_x = np.sin(theta) * len
+        len_y = np.cos(theta) * length
+        len_x = np.sin(theta) * length
         self.position = (self.position[0] - len_x, self.position[1] - len_y)
 
-        self.driver.moved(len, time)
+        self.driver.moved(length, time)
 
     def check_hit(self, screen):
-        x = screen.get_width() / 2
-        y = screen.get_height() / 2
-
         hit = False
         # Check if hit
         for dx in range(int(-self.width / 2), int(self.width / 2) + 1, 2):
@@ -54,15 +51,20 @@ class Car:
                 pos_x = int(self.position[0]) + dx
                 pos_y = int(self.position[1]) + dy
                 terrain = self.track.height(self.rotate_corner(self.position[0], self.position[1], pos_x, pos_y))
-
                 if terrain > 0:
                     hit = True
-                    color = 255, 0, 0
-                else:
-                    color = 0, 255, 0
 
-                pos = self.rotate_corner(x, y, x + dx, y + dy)
-                pygame.draw.circle(screen, color, pos, 1, 1)
+                if screen is not None:
+                    x = screen.get_width() / 2
+                    y = screen.get_height() / 2
+
+                    if terrain > 0:
+                        color = 255, 0, 0
+                    else:
+                        color = 0, 255, 0
+
+                    pos = self.rotate_corner(x, y, x + dx, y + dy)
+                    pygame.draw.circle(screen, color, pos, 1, 1)
         if hit:
             self.hit = True
             self.running = False

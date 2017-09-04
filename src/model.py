@@ -2,6 +2,7 @@ import tensorflow as td
 import numpy as np
 import json
 
+
 class Model:
     input_shape = (1800, 1)
     layer_num = 3
@@ -9,6 +10,7 @@ class Model:
     params = None
     fitness = 0
     generation = 0
+    specimen = 0
 
     def __init__(self):
         self.params = Model.initialize_nn(self.input_shape, self.layer_num, self.hidden_unit_num)

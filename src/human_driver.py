@@ -37,27 +37,30 @@ class HumanDriver:
                 self.environment[count] = terrain
                 count += 1
 
-                if terrain > 0:
-                    color = red
-                    x = int(screen.get_width() / 2)
-                    y = int(screen.get_height() / 2)
-                    pygame.draw.circle(screen, color, (x + dx, y - dy), 5, 3)
-        # print("count: " + str(count))
+                if screen is not None:
+                    if terrain > 0:
+                        color = red
+                        x = int(screen.get_width() / 2)
+                        y = int(screen.get_height() / 2)
+                        pygame.draw.circle(screen, color, (x + dx, y - dy), 5, 3)
+
         # render text
-        myfont = pygame.font.SysFont("monospace", 15)
-        label = myfont.render("Fitness: " + str(self.fitness), 1, (0, 255, 0))
-        screen.blit(label, (0, 40))
-        label = myfont.render("Time: " + str(self.time), 1, (0, 255, 0))
-        screen.blit(label, (0, 60))
-        label = myfont.render("is_hit: " + str(self.is_hit), 1, (0, 255, 0))
-        screen.blit(label, (0, 80))
+        if screen is not None:
+            myfont = pygame.font.SysFont("monospace", 15)
+            label = myfont.render("Fitness: " + str(self.fitness), 1, (0, 255, 0))
+            screen.blit(label, (0, 40))
+            label = myfont.render("Time: " + str(self.time), 1, (0, 255, 0))
+            screen.blit(label, (0, 60))
+            label = myfont.render("is_hit: " + str(self.is_hit), 1, (0, 255, 0))
+            screen.blit(label, (0, 80))
 
     def hit(self):
         self.is_hit = True
 
     def control(self):
         for event in pygame.event.get():
-            if event.type == pygame.QUIT: sys.exit()
+            if event.type == pygame.QUIT:
+                pass
             elif event.type == pygame.KEYDOWN:
                 if event.key == 276:
                     self.car.steer(15)
