@@ -14,7 +14,7 @@ class Model:
     layer_num = 0
     dead = False
 
-    def __init__(self, input_shape=(1800, 1), hidden_unit_num=(10, 5, 4), model=None):
+    def __init__(self, input_shape=(1056, 1), hidden_unit_num=(10, 5, 4), model=None):
         if model is None:
             self.input_shape = input_shape
             self.hidden_unit_num = hidden_unit_num

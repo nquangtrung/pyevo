@@ -26,10 +26,10 @@ class HumanDriver:
     def see(self, screen):
         red = 255, 0, 0
 
-        self.environment = np.zeros((1800, 1))
+        self.environment = np.zeros((1056, 1))
         count = 0
-        for R in range(0, 100, 10):
-            for alpha in range(0, 180, 1):
+        for R in range(0, 200, 10):
+            for alpha in range(0, 180, int(R / 20) + 1):
                 dy = int(R * np.sin((alpha + self.car.steering) * np.pi / 180))
                 dx = int(R * np.cos((alpha + self.car.steering) * np.pi / 180))
 
