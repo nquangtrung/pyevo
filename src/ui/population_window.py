@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import (QWidget, QGridLayout, QLabel,
                              QPushButton, QApplication)
-from test_window import TestWindow
+from tester import Tester
+import functools
 
 
 class PopulationWindow(QWidget):
@@ -12,7 +13,7 @@ class PopulationWindow(QWidget):
     def __init__(self):
         super().__init__()
 
-        self.initUI()
+        self.init_ui()
 
     def set_population(self, population):
         self.population = population
@@ -20,33 +21,32 @@ class PopulationWindow(QWidget):
         self.setLayout(grid)
 
         col = 15
-        for i in range(len(population)):
-            btn_show = QPushButton(str(i))
-            btn_show.clicked.connect(self.startShow)
+        for i in range(population.population()):
+            model = population.specimen(i)
+            btn_show = QPushButton("#" + str(model.generation) + "." + str(model.specimen))
+            btn_show.specimen = model
+            btn_show.clicked.connect(self.make_start_show(model))
             grid.addWidget(btn_show, int(i / col), int(i % col))
 
-    def get_specimen(self):
-        sender = self.sender()
-        specimen = int(sender.text())
-        model = self.population[specimen]
-        return model
-
-    def startTest(self):
+    def start_test(self):
         if self.test is not None:
             self.test.stop()
 
-        self.test = TestWindow(self.get_specimen())
+        self.test = Tester(self.get_specimen())
         print(str(self.test.test()))
         self.test = None
 
-    def startShow(self):
-        if self.test is not None:
-            self.test.stop()
+    def make_start_show(self, model):
+        def start_show():
+            if self.test is not None:
+                self.test.stop()
 
-        self.test = TestWindow(self.get_specimen())
-        self.test.show()
-        self.test = None
+            self.test = Tester(model)
+            self.test.show()
+            self.test = None
 
-    def initUI(self):
+        return start_show
+
+    def init_ui(self):
         self.move(300, 150)
         self.setWindowTitle('Population')

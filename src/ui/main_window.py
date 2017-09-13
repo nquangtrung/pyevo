@@ -2,20 +2,19 @@ import sys, os
 sys.path.append(os.path.abspath(os.path.join('..')))
 from PyQt5.QtWidgets import (QWidget, QGridLayout, QLabel,
                              QPushButton, QApplication)
-from model import Model
+from generation import Generation
 from population_window import PopulationWindow
-from test_window import TestWindow
-
 
 class MainWindow(QWidget):
+    current_generation = None
+    generations = []
 
-    population = []
     population_window = None
 
     gen = 0
     specimen = 0
-    max_fitness = -99999999
-    med_fitness = -99999999
+    max_fitness = 0
+    avg_fitness = 0
     max_specimen = 0
 
     lbl_gen = None
@@ -76,39 +75,25 @@ class MainWindow(QWidget):
 
     def show_info(self):
         self.lbl_gen.setText('Generation: #' + str(self.gen))
-        self.lbl_specimen.setText('Population: ' + str(len(self.population)))
+        self.lbl_specimen.setText('Population: ' + str(0 if self.current_generation is None else self.current_generation.number()))
         self.lbl_max_fitness.setText('Maximum fitness: ' + str(self.max_fitness) + ' specimen: #' + str(self.max_specimen))
-        self.lbl_med_fitness.setText('Median fitness: ' + str(self.med_fitness))
+        self.lbl_med_fitness.setText('Median fitness: ' + str(self.avg_fitness))
 
     def test_1_generation(self):
-        sum = 0
-        for i in range(len(self.population)):
-            model = self.population[i]
-            test = TestWindow(model)
-            fitness, time = test.test()
-            sum += fitness
-            if fitness > self.max_fitness:
-                self.max_fitness = fitness
-                self.max_specimen = i
-
-            self.show_info()
-
-        self.med_fitness = sum / len(self.population)
+        self.current_generation.train()
+        self.max_fitness = self.current_generation.best().fitness
+        self.max_specimen = self.current_generation.best().specimen
+        self.avg_fitness = self.current_generation.avg()
         self.show_info()
 
     def initPopulation(self):
-        population = []
-        for i in range(0, 300):
-            model = Model()
-            model.generation = 0
-            model.specimen = i
-            population.append(model)
-        self.population = population
+        self.current_generation = Generation()
+        self.generations.append(self.current_generation)
         self.show_info()
 
     def showPopulation(self):
         self.population_window = PopulationWindow()
-        self.population_window.set_population(self.population)
+        self.population_window.set_population(self.current_generation.population)
         self.population_window.show()
 
     def buttonClicked(self):

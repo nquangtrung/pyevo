@@ -4,17 +4,29 @@ import json
 
 
 class Model:
-    input_shape = (1800, 1)
-    layer_num = 3
-    hidden_unit_num = (10, 5, 4)
+    input_shape = None
+    hidden_unit_num = None
     params = None
     fitness = 0
     time = 0
     generation = 0
     specimen = 0
+    layer_num = 0
+    dead = False
 
-    def __init__(self):
-        self.params = Model.initialize_nn(self.input_shape, self.layer_num, self.hidden_unit_num)
+    def __init__(self, input_shape=(1800, 1), hidden_unit_num=(10, 5, 4), model=None):
+        if model is None:
+            self.input_shape = input_shape
+            self.hidden_unit_num = hidden_unit_num
+            self.layer_num = len(hidden_unit_num)
+            self.params = Model.initialize_nn(self.input_shape, self.hidden_unit_num)
+            return
+
+        # Copy the model here
+        self.input_shape = model.input_shape
+        self.hidden_unit_num = model.hidden_unit_num
+        self.layer_num = model.layer_num
+        self.params = model.params
 
     def forward_prop(self, inp):
         a_prev = inp
@@ -61,7 +73,8 @@ class Model:
         return {"w": w, "b": b}
 
     @staticmethod
-    def initialize_nn(input_shape, layer_num, hidden_unit_num):
+    def initialize_nn(input_shape, hidden_unit_num):
+        layer_num = len(hidden_unit_num)
         n_l_prev = input_shape[0]
 
         params = {}

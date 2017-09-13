@@ -15,11 +15,12 @@ pink = (255, 200, 200)
 
 tracks = [
     {"filepath": "../images/track-00.png", "start_point": (100, 440)},
-    {"filepath": "../images/track-01.png", "start_point": (110, 425)}
+    {"filepath": "../images/track-01.png", "start_point": (110, 425)},
+    {"filepath": "../images/track-02.png", "start_point": (90, 455)}
 ]
 
 
-class TestWindow:
+class Tester:
     model = None
     testing = False
 
@@ -45,7 +46,7 @@ class TestWindow:
         else:
             screen = None
 
-        track_id = 1
+        track_id = 2
         track = Track(tracks[track_id]["filepath"], tracks[track_id]["start_point"])
         car = Car()
         track.add_car(car)
@@ -83,4 +84,4 @@ class TestWindow:
                 model.time = driver.time
                 break
 
-        return model.fitness, model.time
+        return driver.fitness, model.time
