@@ -26,7 +26,16 @@ class Population:
         return self.specimens[index]
 
     def kill(self, ratio):
-        pass
+        s = sorted(self.specimens, key=lambda x: x.fitness)
+        print("We will kill " + str(int(self.max_population * ratio)) + " specimens")
+        for i in range(self.max_population):
+            model = s[i]
+            print("Specimen " + str(model.specimen) + " fitness: " + str(model.fitness))
+
+        for i in range(int(self.max_population * ratio)):
+            model = s[i]
+            print('Kill ' + str(model.specimen) + ' fitness: ' + str(model.fitness))
+            s[i].dead = True
 
     def reproduce(self, next_gen):
         specimens = []
@@ -39,7 +48,7 @@ class Population:
         return Population(specimens)
 
     def population(self):
-        return len(self.specimens)
+        return sum(map(lambda model: 0 if model.dead else 1, self.specimens))
 
     def is_fill(self):
         return self.population() == self.max_population

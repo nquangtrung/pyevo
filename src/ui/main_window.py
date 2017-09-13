@@ -5,17 +5,12 @@ from PyQt5.QtWidgets import (QWidget, QGridLayout, QLabel,
 from generation import Generation
 from population_window import PopulationWindow
 
+
 class MainWindow(QWidget):
     current_generation = None
     generations = []
 
     population_window = None
-
-    gen = 0
-    specimen = 0
-    max_fitness = 0
-    avg_fitness = 0
-    max_specimen = 0
 
     lbl_gen = None
     lbl_specimen = None
@@ -48,12 +43,12 @@ class MainWindow(QWidget):
         grid.addWidget(btn_train_10_gen, 4, 1)
 
         btn_kill = QPushButton('Kill bad specimen')
-        btn_kill.clicked.connect(self.buttonClicked)
-        grid.addWidget(btn_train_10_gen, 4, 1)
+        btn_kill.clicked.connect(self.kill)
+        grid.addWidget(btn_kill, 5, 1)
 
         btn_reproduce = QPushButton('Reproduce new generation')
         btn_reproduce.clicked.connect(self.buttonClicked)
-        grid.addWidget(btn_train_10_gen, 4, 1)
+        grid.addWidget(btn_reproduce, 6, 1)
 
         self.lbl_gen = QLabel('Generation: ')
         grid.addWidget(self.lbl_gen, 1, 2)
@@ -69,21 +64,37 @@ class MainWindow(QWidget):
 
         self.show_info()
 
-        self.move(300, 150)
+        self.move(100, 100)
         self.setWindowTitle('Training')
         self.show()
 
     def show_info(self):
-        self.lbl_gen.setText('Generation: #' + str(self.gen))
-        self.lbl_specimen.setText('Population: ' + str(0 if self.current_generation is None else self.current_generation.number()))
-        self.lbl_max_fitness.setText('Maximum fitness: ' + str(self.max_fitness) + ' specimen: #' + str(self.max_specimen))
-        self.lbl_med_fitness.setText('Median fitness: ' + str(self.avg_fitness))
+        gen_number = 0 if self.current_generation is None else self.current_generation.generation_number
+        self.lbl_gen.setText('Generation: #' + str(gen_number))
+
+        population = 0 if self.current_generation is None else self.current_generation.number()
+        self.lbl_specimen.setText('Population: ' + str(population))
+
+        best_fitness = 0 if self.current_generation is None else self.current_generation.max_fitness()
+        best_specimen = 0 if self.current_generation is None else self.current_generation.max_specimen()
+        self.lbl_max_fitness.setText('Maximum fitness: ' + str(best_fitness) + ' specimen: #' + str(best_specimen))
+
+        avg_fitness = 0 if self.current_generation is None else self.current_generation.avg()
+        self.lbl_med_fitness.setText('Median fitness: ' + str(avg_fitness))
 
     def test_1_generation(self):
         self.current_generation.train()
-        self.max_fitness = self.current_generation.best().fitness
-        self.max_specimen = self.current_generation.best().specimen
-        self.avg_fitness = self.current_generation.avg()
+        self.show_info()
+
+    def kill(self):
+        self.current_generation.kill()
+        self.show_info()
+
+    def reproduce(self):
+        new_gen = self.current_generation.reproduce()
+        self.current_generation = new_gen
+        self.generations.append(new_gen)
+
         self.show_info()
 
     def initPopulation(self):

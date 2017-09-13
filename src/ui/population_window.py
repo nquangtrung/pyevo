@@ -21,9 +21,10 @@ class PopulationWindow(QWidget):
         self.setLayout(grid)
 
         col = 15
-        for i in range(population.population()):
+        for i in range(population.max_population):
             model = population.specimen(i)
-            btn_show = QPushButton("#" + str(model.generation) + "." + str(model.specimen))
+            dead = " (Dead)" if model.dead else ""
+            btn_show = QPushButton("#" + str(model.generation) + "." + str(model.specimen) + dead)
             btn_show.specimen = model
             btn_show.clicked.connect(self.make_start_show(model))
             grid.addWidget(btn_show, int(i / col), int(i % col))
