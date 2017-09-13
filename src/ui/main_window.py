@@ -16,6 +16,9 @@ class MainWindow(QWidget):
     lbl_specimen = None
     lbl_max_fitness = None
     lbl_med_fitness = None
+    lbl_status = None
+
+    status = 'Idle'
 
     def __init__(self):
         super().__init__()
@@ -39,7 +42,7 @@ class MainWindow(QWidget):
         grid.addWidget(btn_train_1_gen, 3, 1)
 
         btn_train_10_gen = QPushButton('Train 10 generation')
-        btn_train_10_gen.clicked.connect(self.buttonClicked)
+        btn_train_10_gen.clicked.connect(self.test_10_generation)
         grid.addWidget(btn_train_10_gen, 4, 1)
 
         btn_kill = QPushButton('Kill bad specimen')
@@ -47,7 +50,7 @@ class MainWindow(QWidget):
         grid.addWidget(btn_kill, 5, 1)
 
         btn_reproduce = QPushButton('Reproduce new generation')
-        btn_reproduce.clicked.connect(self.buttonClicked)
+        btn_reproduce.clicked.connect(self.reproduce)
         grid.addWidget(btn_reproduce, 6, 1)
 
         self.lbl_gen = QLabel('Generation: ')
@@ -61,6 +64,9 @@ class MainWindow(QWidget):
 
         self.lbl_med_fitness = QLabel('Median Fitness: ')
         grid.addWidget(self.lbl_med_fitness, 4, 2)
+
+        self.lbl_status = QLabel('Status: ' + self.status)
+        grid.addWidget(self.lbl_status, 5, 2)
 
         self.show_info()
 
@@ -82,8 +88,25 @@ class MainWindow(QWidget):
         avg_fitness = 0 if self.current_generation is None else self.current_generation.avg()
         self.lbl_med_fitness.setText('Median fitness: ' + str(avg_fitness))
 
+        self.lbl_status.setText('Status: ' + self.status)
+
     def test_1_generation(self):
-        self.current_generation.train()
+        self.status = 'Training'
+        self.show_info()
+
+        self.current_generation.train(self.on_train)
+
+        self.status = 'Done'
+        self.show_info()
+
+    def test_10_generation(self):
+        for i in range(10):
+            new_gen = self.current_generation.next_generation(self.on_train)
+            self.current_generation = new_gen
+            self.generations.append(new_gen)
+            self.show_info()
+
+    def on_train(self, model):
         self.show_info()
 
     def kill(self):

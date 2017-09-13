@@ -35,13 +35,14 @@ class Population:
 
     def reproduce(self, next_gen):
         specimens = []
-        for i in range(0, self.population()):
+        for i in range(0, self.max_population):
             model = self.specimen(i)
             if model.dead:
+                print("Reproducing #" + str(next_gen) + "." + str(i))
                 model = self.init_model(i, next_gen)
             specimens.append(model)
 
-        return Population(specimens)
+        return Population(specimens=specimens)
 
     def population(self):
         return sum(map(lambda model: 0 if model.dead else 1, self.specimens))

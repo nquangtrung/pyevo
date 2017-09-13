@@ -31,9 +31,9 @@ class Generation:
     def avg(self):
         return self.avg_fitness
 
-    def train(self):
+    def train(self, cb=None):
         total = 0
-        for i in range(self.population.population()):
+        for i in range(self.population.max_population):
             model = self.population.specimen(i)
             test = Tester(model)
             fitness, time = test.test()
@@ -48,13 +48,16 @@ class Generation:
                   + " fitness: " + str(model.fitness)
                   + " time: " + str(model.time))
 
-        self.avg_fitness = total / self.population.population()
+            if cb is not None:
+                cb(model)
+
+        self.avg_fitness = total / self.population.max_population
 
     def number(self):
         return self.population.population()
 
-    def next_generation(self):
-        self.train()
+    def next_generation(self, cb=None):
+        self.train(cb)
         self.kill()
 
         gen = self.reproduce()
@@ -64,4 +67,5 @@ class Generation:
         self.population.kill(0.75)
 
     def reproduce(self):
-        return Generation(population=self.population.reproduce(), generation_number=self.generation_number + 1)
+        return Generation(population=self.population.reproduce(self.generation_number + 1),
+                          generation_number=self.generation_number + 1)
