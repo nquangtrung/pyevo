@@ -4,6 +4,9 @@ from test_window import TestWindow
 
 
 class PopulationWindow(QWidget):
+
+    population = []
+
     test = None
 
     def __init__(self):
@@ -16,15 +19,11 @@ class PopulationWindow(QWidget):
         grid = QGridLayout()
         self.setLayout(grid)
 
-        col = 10
+        col = 15
         for i in range(len(population)):
-            btn_test = QPushButton(str(i))
-            btn_test.clicked.connect(self.startTest)
-            grid.addWidget(btn_test, int((i * 2) / col), (i * 2) % col)
-
             btn_show = QPushButton(str(i))
             btn_show.clicked.connect(self.startShow)
-            grid.addWidget(btn_show, int((i * 2 + 1) / col), (i * 2 + 1) % col)
+            grid.addWidget(btn_show, int(i / col), int(i % col))
 
     def get_specimen(self):
         sender = self.sender()
@@ -49,6 +48,5 @@ class PopulationWindow(QWidget):
         self.test = None
 
     def initUI(self):
-
         self.move(300, 150)
         self.setWindowTitle('Population')

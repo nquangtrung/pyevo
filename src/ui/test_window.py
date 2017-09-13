@@ -31,12 +31,12 @@ class TestWindow:
         self.testing = False
 
     def test(self):
-        return self.execute(show=False)
+        return self.execute(show=False, interval=0.1)
 
     def show(self):
         self.execute(show=True)
 
-    def execute(self, show = True):
+    def execute(self, show=True, interval=0):
         self.testing = True
 
         model = self.model
@@ -60,6 +60,7 @@ class TestWindow:
             if show:
                 screen.fill(black)
 
+            diff = interval if interval > 0 else diff
             # Update and draw the new state of the car
             car.update(diff)
             if show:
