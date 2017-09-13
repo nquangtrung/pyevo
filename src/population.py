@@ -28,10 +28,6 @@ class Population:
     def kill(self, ratio):
         s = sorted(self.specimens, key=lambda x: x.fitness)
         print("We will kill " + str(int(self.max_population * ratio)) + " specimens")
-        for i in range(self.max_population):
-            model = s[i]
-            print("Specimen " + str(model.specimen) + " fitness: " + str(model.fitness))
-
         for i in range(int(self.max_population * ratio)):
             model = s[i]
             print('Kill ' + str(model.specimen) + ' fitness: ' + str(model.fitness))

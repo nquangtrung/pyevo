@@ -43,6 +43,11 @@ class Generation:
                 self.best_fitness = fitness
                 self.best_specimen = model
 
+            print("Trained gen #" + str(self.generation_number)
+                  + " specimen " + str(model.specimen)
+                  + " fitness: " + str(model.fitness)
+                  + " time: " + str(model.time))
+
         self.avg_fitness = total / self.population.population()
 
     def number(self):
