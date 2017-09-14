@@ -1,14 +1,14 @@
-from PyQt5.QtWidgets import (QWidget, QGridLayout, QLabel,
-                             QPushButton, QApplication)
+from PyQt5.QtWidgets import (QWidget, QGridLayout,
+                             QPushButton)
 from tester import Tester
-import functools
+from pygame_window import PygameWindow
 
 
 class PopulationWindow(QWidget):
 
     population = []
-
-    test = None
+    pygame = None
+    tester = None
 
     def __init__(self):
         super().__init__()
@@ -29,25 +29,26 @@ class PopulationWindow(QWidget):
             btn_show.clicked.connect(self.make_start_show(model))
             grid.addWidget(btn_show, int(i / col), int(i % col))
 
-    def start_test(self):
-        if self.test is not None:
-            self.test.stop()
-
-        self.test = Tester(self.get_specimen())
-        print(str(self.test.test()))
-        self.test = None
+    # def start_test(self):
+    #     if self.tester is not None:
+    #         self.tester.stop()
+    #
+    #     self.tester = Tester(self.get_specimen())
+    #     print(str(self.tester.test()))
+    #     self.tester = None
 
     def make_start_show(self, model):
         def start_show():
-            if self.test is not None:
-                self.test.stop()
+            if self.tester is not None:
+                self.tester.stop()
 
-            self.test = Tester(model)
-            self.test.show()
-            self.test = None
+            self.pygame = PygameWindow()
+            self.pygame.show()
+            self.tester = Tester(model)
+            self.tester.show(self.pygame)
 
         return start_show
 
     def init_ui(self):
-        self.move(300, 150)
+        self.move(100, 100)
         self.setWindowTitle('Population')

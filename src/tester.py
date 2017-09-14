@@ -34,15 +34,16 @@ class Tester:
     def test(self):
         return self.execute(show=False, interval=0.1)
 
-    def show(self):
-        self.execute(show=True)
+    def show(self, window=None):
+        self.execute(show=True, window=window)
 
-    def execute(self, show=True, interval=0):
+    def execute(self, show=True, interval=0, window=None):
         self.testing = True
 
         model = self.model
         if show:
-            screen = pygame.display.set_mode((480, 480))
+            screen = pygame.Surface((640, 480))
+            window.surface(screen)
         else:
             screen = None
 
@@ -76,8 +77,8 @@ class Tester:
                 myfont = pygame.font.SysFont("monospace", 15)
                 label = myfont.render("Generation #" + str(model.generation) + " Specimen #" + str(model.specimen), 1, (0, 255, 0))
                 screen.blit(label, (0, 100))
-
-                pygame.display.flip()
+                window.update()
+                # pygame.display.flip()
 
             if finish:
                 model.fitness = driver.fitness
