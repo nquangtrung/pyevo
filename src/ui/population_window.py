@@ -41,6 +41,7 @@ class PopulationWindow(QWidget):
         def start_show():
             if self.tester is not None:
                 self.tester.stop()
+                self.pygame.close()
 
             self.pygame = PygameWindow()
             self.pygame.show()

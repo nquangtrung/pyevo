@@ -44,6 +44,7 @@ class Tester:
         if show:
             screen = pygame.Surface((640, 480))
             window.surface(screen)
+            window.loop(self)
         else:
             screen = None
 

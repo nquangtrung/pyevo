@@ -74,6 +74,9 @@ class MainWindow(QWidget):
         self.setWindowTitle('Training')
         self.show()
 
+    def closeEvent(self, event):
+        sys.exit(0)
+
     def show_info(self):
         gen_number = 0 if self.current_generation is None else self.current_generation.generation_number
         self.lbl_gen.setText('Generation: #' + str(gen_number))
