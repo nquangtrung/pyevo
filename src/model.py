@@ -13,6 +13,7 @@ class Model:
     specimen = 0
     layer_num = 0
     dead = False
+    trained = False
 
     def __init__(self, input_shape=(1056, 1), hidden_unit_num=(10, 5, 4), model=None):
         if model is None:

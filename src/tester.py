@@ -32,6 +32,10 @@ class Tester:
         self.testing = False
 
     def test(self):
+        if self.model.trained:
+            # Now the result is consistent, we don't need to re-train everything
+            return self.model.fitness, self.model.time
+
         return self.execute(show=False, interval=0.1)
 
     def show(self, window=None):
@@ -81,9 +85,11 @@ class Tester:
                 window.update()
                 # pygame.display.flip()
 
-            if finish:
+            if finish and not show:
                 model.fitness = driver.fitness
                 model.time = driver.time
+                model.trained = True
+
                 break
 
         return driver.fitness, model.time
