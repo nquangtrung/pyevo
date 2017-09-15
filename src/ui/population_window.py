@@ -23,7 +23,7 @@ class PopulationWindow(QWidget):
         col = 15
         for i in range(population.max_population):
             model = population.specimen(i)
-            dead = " (Dead)" if model.dead else ""
+            dead = " (Dead)" if model.dead else (" (" + str(model.fitness) + ")") if model.trained else ""
             btn_show = QPushButton("#" + str(model.generation) + "." + str(model.specimen) + dead)
             btn_show.specimen = model
             btn_show.clicked.connect(self.make_start_show(model))

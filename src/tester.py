@@ -39,7 +39,7 @@ class Tester:
         return self.execute(show=False, interval=0.1)
 
     def show(self, window=None):
-        self.execute(show=True, window=window)
+        self.execute(show=True, window=window, interval=0.1)
 
     def execute(self, show=True, interval=0, window=None):
         self.testing = True
@@ -85,10 +85,11 @@ class Tester:
                 window.update()
                 # pygame.display.flip()
 
-            if finish and not show:
+            if finish:
                 model.fitness = driver.fitness
                 model.time = driver.time
-                model.trained = True
+                if not show:
+                    model.trained = True
 
                 break
 

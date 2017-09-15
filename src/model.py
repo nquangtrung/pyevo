@@ -14,6 +14,8 @@ class Model:
     layer_num = 0
     dead = False
     trained = False
+    children = []
+    parent = None
 
     def __init__(self, input_shape=(1056, 1), hidden_unit_num=(10, 5, 4), model=None):
         if model is None:
@@ -29,6 +31,10 @@ class Model:
         self.layer_num = model.layer_num
         self.params = model.params
 
+        # Initiate hierarchy
+        self.parent = model
+        model.children.append(self)
+
     def forward_prop(self, inp):
         a_prev = inp
         for l in range(1, self.layer_num):
@@ -43,7 +49,7 @@ class Model:
 
     def save(self, gen, specimen):
         json_params = {};
-        for l in range(0, self.layer_num):
+        for l in range(self.layer_num):
             json_params["W" + str(l)] = self.params["W" + str(l)].tolist()
             json_params["b" + str(l)] = self.params["b" + str(l)].tolist()
 
