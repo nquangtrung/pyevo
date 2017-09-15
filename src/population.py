@@ -1,26 +1,22 @@
 from model import Model
+from breeder import Breeder
 
 
 class Population:
     specimens = []
     max_population = 0
 
+    breeder = None
+
     def __init__(self, max_population=300, specimens=None):
+        self.breeder = Breeder(self)
         if specimens is None:
             self.max_population = max_population
-            for i in range(0, max_population):
-                model = self.init_model(i)
-                self.specimens.append(model)
+            self.specimens = self.breeder.breed_1st_gen()
             return
 
         self.specimens = specimens
         self.max_population = len(specimens)
-
-    def init_model(self, specimen, gen=0):
-        model = Model()
-        model.generation = gen
-        model.specimen = specimen
-        return model
 
     def specimen(self, index):
         return self.specimens[index]
@@ -34,14 +30,7 @@ class Population:
             s[i].dead = True
 
     def reproduce(self, next_gen):
-        specimens = []
-        for i in range(0, self.max_population):
-            model = self.specimen(i)
-            if model.dead:
-                print("Reproducing #" + str(next_gen) + "." + str(i))
-                model = self.init_model(i, next_gen)
-            specimens.append(model)
-
+        specimens = self.breeder.breed(next_gen)
         return Population(specimens=specimens)
 
     def population(self):
