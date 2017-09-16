@@ -168,7 +168,7 @@ class MainWindow(QMainWindow):
         self.update_slider()
         self.show_info()
 
-        self.statusBar().showMessage("File loaded")
+        # self.statusBar().showMessage("File loaded")
 
     def saveEvent(self, event):
         options = QFileDialog.Options()

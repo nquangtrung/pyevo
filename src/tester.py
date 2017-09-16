@@ -102,6 +102,9 @@ class Tester:
         self.testing = True
 
         model = self.model
+        if self.driver is None:
+            self.init_car(self.model)
+
         self.driver.set_limit(limit)
 
         s = time.time()
