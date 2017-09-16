@@ -23,6 +23,8 @@ tracks = [
 class Tester:
     model = None
     testing = False
+    screen = None
+    window = None
 
     def __init__(self, model):
         self.model = model
@@ -38,17 +40,24 @@ class Tester:
 
         return self.execute(show=False, interval=0.1)
 
-    def show(self, window=None):
-        self.execute(show=True, window=window, interval=0.1)
+    def show(self):
+        self.execute(show=True)
 
-    def execute(self, show=True, interval=0, window=None):
+    def init(self, window):
+        self.screen = pygame.Surface((640, 480))
+        self.screen.fill(black)
+
+        self.window = window
+        self.window.surface(self.screen)
+        self.window.loop(self)
+        self.window.update()
+
+    def execute(self, show=True, interval=0):
         self.testing = True
 
         model = self.model
         if show:
-            screen = pygame.Surface((640, 480))
-            window.surface(screen)
-            window.loop(self)
+            screen = self.screen
         else:
             screen = None
 
@@ -60,7 +69,6 @@ class Tester:
         driver.drive(car)
         s = time.time()
 
-        finish = False
         while self.testing:
             diff = time.time() - s
             s = time.time()
@@ -79,16 +87,15 @@ class Tester:
             finish = driver.control()
 
             if show:
-                myfont = pygame.font.SysFont("monospace", 15)
-                label = myfont.render("Generation #" + str(model.generation) + " Specimen #" + str(model.specimen), 1, (0, 255, 0))
+                my_font = pygame.font.SysFont("monospace", 15)
+                label = my_font.render("Generation #" + str(model.generation) + " Specimen #" + str(model.specimen), 1, (0, 255, 0))
                 screen.blit(label, (0, 100))
-                window.update()
-                # pygame.display.flip()
+                self.window.update()
 
             if finish:
-                model.fitness = driver.fitness
-                model.time = driver.time
                 if not show:
+                    model.fitness = driver.fitness
+                    model.time = driver.time
                     model.trained = True
 
                 break

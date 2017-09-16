@@ -1,14 +1,14 @@
 from PyQt5.QtWidgets import (QWidget, QGridLayout,
                              QPushButton)
 from tester import Tester
-from pygame_window import PygameWindow
+from tester_window import TesterWindow
 
 
 class PopulationWindow(QWidget):
 
     population = []
-    pygame = None
-    tester = None
+    # pygame = None
+    # tester = None
 
     def __init__(self):
         super().__init__()
@@ -29,24 +29,12 @@ class PopulationWindow(QWidget):
             btn_show.clicked.connect(self.make_start_show(model))
             grid.addWidget(btn_show, int(i / col), int(i % col))
 
-    # def start_test(self):
-    #     if self.tester is not None:
-    #         self.tester.stop()
-    #
-    #     self.tester = Tester(self.get_specimen())
-    #     print(str(self.tester.test()))
-    #     self.tester = None
-
     def make_start_show(self, model):
         def start_show():
-            if self.tester is not None:
-                self.tester.stop()
-                self.pygame.close()
-
-            self.pygame = PygameWindow()
-            self.pygame.show()
-            self.tester = Tester(model)
-            self.tester.show(self.pygame)
+            tester = Tester(model)
+            window = TesterWindow()
+            window.show()
+            tester.init(window)
 
         return start_show
 
