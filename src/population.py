@@ -38,3 +38,22 @@ class Population:
 
     def is_fill(self):
         return self.population() == self.max_population
+
+    def to_hash(self):
+        models = []
+        for i in range(self.max_population):
+            models.append(self.specimen(i).to_hash())
+
+        return {
+            "max_population": self.max_population,
+            "models": models
+        }
+
+    @staticmethod
+    def from_hash(h):
+        specimens = []
+        for i in range(len(h["models"])):
+            specimens.append(Model.from_hash(h["models"][i]))
+
+        return Population(specimens=specimens)
+

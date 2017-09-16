@@ -17,19 +17,24 @@ class Model:
     children = []
     parent = None
 
-    def __init__(self, input_shape=(1056, 1), hidden_unit_num=(10, 5, 4), model=None):
+    def __init__(self, input_shape=(1056, 1), hidden_unit_num=(10, 5, 4), params=None, model=None):
         if model is None:
             self.input_shape = input_shape
             self.hidden_unit_num = hidden_unit_num
             self.layer_num = len(hidden_unit_num)
-            self.params = Model.initialize_nn(self.input_shape, self.hidden_unit_num)
+            if params is None:
+                self.params = Model.initialize_nn(self.input_shape, self.hidden_unit_num)
+            else:
+                self.params = params
             return
 
         # Copy the model here
         self.input_shape = model.input_shape
         self.hidden_unit_num = model.hidden_unit_num
         self.layer_num = model.layer_num
-        self.params = model.params
+        self.params = {}
+        for key, value in model.params.items():
+            self.params[key] = value.copy()
 
         # Initiate hierarchy
         self.parent = model
@@ -48,7 +53,7 @@ class Model:
         return y
 
     def save(self, gen, specimen):
-        json_params = {};
+        json_params = {}
         for l in range(self.layer_num):
             json_params["W" + str(l)] = self.params["W" + str(l)].tolist()
             json_params["b" + str(l)] = self.params["b" + str(l)].tolist()
@@ -63,6 +68,52 @@ class Model:
         text_file = open("model_" + str(gen) + "_" + str(specimen) + ".txt", "w")
         text_file.write(text)
         text_file.close()
+
+    def to_hash(self):
+        json_params = {}
+        for l in range(self.layer_num):
+            json_params["W" + str(l)] = self.params["W" + str(l)].tolist()
+            json_params["b" + str(l)] = self.params["b" + str(l)].tolist()
+
+        return {
+            # NN info
+            "input_shape": self.input_shape,
+            "layer_num": self.layer_num,
+            "hidden_unit_num": self.hidden_unit_num,
+            "params": json_params,
+
+            # Model's train status
+            "fitness": self.fitness,
+            "time": self.time,
+            "dead": self.dead,
+            "trained": self.trained,
+
+            # Generation info
+            "generation": self.generation,
+            "specimen": self.specimen
+        }
+
+    @staticmethod
+    def from_hash(h):
+        layer_num = h['layer_num']
+        params = {}
+        for l in range(layer_num):
+            params["W" + str(l)] = np.array(h["params"]["W" + str(l)])
+            params["b" + str(l)] = np.array(h["params"]["b" + str(l)])
+
+        model = Model(input_shape=tuple(h["input_shape"]), hidden_unit_num=h['hidden_unit_num'], params=params)
+
+        # Model's train status
+        model.fitness = h["fitness"]
+        model.time = h["time"]
+        model.dead = h["dead"]
+        model.trained = h["trained"]
+
+        # Generation info
+        model.generation = h["generation"]
+        model.specimen = h["specimen"]
+
+        return model
 
     @staticmethod
     def sigmoid(z):

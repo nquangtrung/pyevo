@@ -94,7 +94,7 @@ class Breeder:
         layer_number = randint(3, 10)
         hidden_unit_num = []
         for i in range(layer_number - 1):
-            hidden_unit_num.append(randint(5, 300))
+            hidden_unit_num.append(randint(5, 20))
 
         hidden_unit_num.append(4)
         return tuple(hidden_unit_num)

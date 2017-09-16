@@ -1,16 +1,21 @@
 import sys, os
 sys.path.append(os.path.abspath(os.path.join('..')))
-from PyQt5.QtWidgets import (QWidget, QGridLayout, QLabel,
-                             QPushButton, QApplication)
+from PyQt5.QtWidgets import (QWidget, QGridLayout, QLabel, QMainWindow,
+                             QPushButton, QApplication, QAction, QFileDialog)
 from generation import Generation
 from population_window import PopulationWindow
+import simplejson as json
+import marshal
+import threading
 
 
-class MainWindow(QWidget):
+class MainWindow(QMainWindow):
     current_generation = None
     generations = []
 
     population_window = None
+
+    main_widget = None
 
     lbl_gen = None
     lbl_specimen = None
@@ -26,8 +31,34 @@ class MainWindow(QWidget):
 
     def initUI(self):
 
+        exit_act = QAction('&Exit', self)
+        exit_act.setShortcut('Ctrl+X')
+        exit_act.setStatusTip('Exit application')
+        exit_act.triggered.connect(self.closeEvent)
+
+        save_act = QAction('&Save', self)
+        save_act.setShortcut('Ctrl+S')
+        save_act.setStatusTip('Save')
+        save_act.triggered.connect(self.saveEvent)
+
+        load_act = QAction('&Load', self)
+        load_act.setShortcut('Ctrl+O')
+        load_act.setStatusTip('Load')
+        load_act.triggered.connect(self.loadEvent)
+
+        self.statusBar()
+
+        menubar = self.menuBar()
+        file_menu = menubar.addMenu('&File')
+        file_menu.addAction(save_act)
+        file_menu.addAction(load_act)
+        file_menu.addAction(exit_act)
+
         grid = QGridLayout()
-        self.setLayout(grid)
+        widget = QWidget()
+        widget.setLayout(grid)
+        self.setCentralWidget(widget)
+        self.main_widget = widget
 
         btn_init = QPushButton('Initialize first generation')
         btn_init.clicked.connect(self.initPopulation)
@@ -73,6 +104,51 @@ class MainWindow(QWidget):
         self.move(100, 100)
         self.setWindowTitle('Training')
         self.show()
+
+    def save(self, file_name):
+        self.statusBar().showMessage("Saving generations at: " + file_name)
+        generations = list(map(lambda gen: gen.to_hash(), self.generations))
+
+        print('generate json: ')
+        text = json.dumps(generations)
+        print('text length: ' + str(len(text)))
+        text_file = open(file_name, "w")
+        text_file.write(text)
+        text_file.close()
+        self.statusBar().showMessage("File saved")
+
+    def load(self, file_name):
+        self.statusBar().showMessage("Loading generations at: " + file_name)
+        text_file = open(file_name, "r")
+        text = text_file.read()
+        text_file.close()
+
+        generations = json.loads(text)
+        self.generations = list(map(lambda gen: Generation.from_hash(gen), generations))
+        self.current_generation = self.generations[-1]
+        self.show_info()
+
+        self.statusBar().showMessage("File loaded")
+
+    def saveEvent(self, event):
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        file_name, _ = QFileDialog.getSaveFileName(self, "QFileDialog.getSaveFileName()", "","Neural Network Files (*.nn)", options=options)
+        if file_name:
+            t = threading.Thread(target=self.save, args=(file_name,))
+            t.start()
+        else:
+            self.statusBar().showMessage("Save cancelled")
+
+    def loadEvent(self, event):
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        file_name, _ = QFileDialog.getOpenFileName(self, "QFileDialog.getOpenFileName()", "", "Neural Network Files (*.nn)", options=options)
+        if file_name:
+            t = threading.Thread(target=self.load, args=(file_name,))
+            t.start()
+        else:
+            print("Load cancelled")
 
     def closeEvent(self, event):
         sys.exit(0)
