@@ -100,8 +100,11 @@ class Tester:
 
     def execute(self, show=True, interval=0, limit=10, on_update=None):
         self.testing = True
-
         model = self.model
+
+        if model.dead:
+            return model.fitness, model.time
+
         if self.driver is None:
             self.init_car(self.model)
 

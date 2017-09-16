@@ -145,9 +145,8 @@ class MainWindow(QMainWindow):
         self.statusBar().showMessage("Saving generations at: " + file_name)
         generations = list(map(lambda gen: gen.to_hash(), generations))
 
-        print('generate json: ')
         text = json.dumps(generations)
-        print('text length: ' + str(len(text)))
+        print('Size: ' + str(len(text)))
         text_file = open(file_name, "w")
         text_file.write(text)
         text_file.close()
@@ -166,7 +165,7 @@ class MainWindow(QMainWindow):
 
         # Update UI
         self.update_slider()
-        self.show_info()
+        self.show_info(plot=True)
 
         # self.statusBar().showMessage("File loaded")
 
@@ -205,12 +204,11 @@ class MainWindow(QMainWindow):
 
     def plot(self):
         plots = [{
-            "title": "Best fitness",
             "data": list(map(lambda gen: gen.best_fitness if gen.trained else None, self.generations))
         }, {
-            "title": "Average fitness",
             "data": list(map(lambda gen: gen.avg_fitness if gen.trained else None, self.generations))
         }]
+
         self.canvas.plot(plots)
 
     def show_info(self, plot=False):

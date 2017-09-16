@@ -16,7 +16,7 @@ class Generation:
 
     def __init__(self, population=None, generation_number=0):
         if population is None:
-            population = Population(300)
+            population = Population(10)
 
         self.generation_number = generation_number
         self.population = population
@@ -79,7 +79,8 @@ class Generation:
             "population": self.population.to_hash(),
             "best_fitness": self.best_fitness,
             "avg_fitness": self.avg_fitness,
-            "generation_number": self.generation_number
+            "generation_number": self.generation_number,
+            "trained": self.trained
         }
 
     @staticmethod
@@ -90,6 +91,7 @@ class Generation:
 
         gen.best_fitness = h["best_fitness"]
         gen.avg_fitness = h["avg_fitness"]
+        gen.trained = h["trained"]
 
         for i in range(gen.population.max_population):
             model = gen.population.specimen(i)

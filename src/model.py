@@ -52,6 +52,10 @@ class Model:
 
         return y
 
+    def kill(self):
+        self.dead = True
+        del self.__dict__["params"]
+
     def save(self, gen, specimen):
         json_params = {}
         for l in range(self.layer_num):
@@ -71,9 +75,10 @@ class Model:
 
     def to_hash(self):
         json_params = {}
-        for l in range(self.layer_num):
-            json_params["W" + str(l)] = self.params["W" + str(l)].tolist()
-            json_params["b" + str(l)] = self.params["b" + str(l)].tolist()
+        if not self.dead:
+            for l in range(self.layer_num):
+                json_params["W" + str(l)] = self.params["W" + str(l)].tolist()
+                json_params["b" + str(l)] = self.params["b" + str(l)].tolist()
 
         return {
             # NN info
@@ -97,9 +102,10 @@ class Model:
     def from_hash(h):
         layer_num = h['layer_num']
         params = {}
-        for l in range(layer_num):
-            params["W" + str(l)] = np.array(h["params"]["W" + str(l)])
-            params["b" + str(l)] = np.array(h["params"]["b" + str(l)])
+        if not h["dead"]:
+            for l in range(layer_num):
+                params["W" + str(l)] = np.array(h["params"]["W" + str(l)])
+                params["b" + str(l)] = np.array(h["params"]["b" + str(l)])
 
         model = Model(input_shape=tuple(h["input_shape"]), hidden_unit_num=h['hidden_unit_num'], params=params)
 
