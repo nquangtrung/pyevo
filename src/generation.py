@@ -12,6 +12,8 @@ class Generation:
 
     generation_number = 0
 
+    trained = False
+
     def __init__(self, population=None, generation_number=0):
         if population is None:
             population = Population(10)
@@ -52,6 +54,7 @@ class Generation:
                 cb(model)
 
         self.avg_fitness = total / self.population.max_population
+        self.trained = True
 
     def number(self):
         return self.population.population()

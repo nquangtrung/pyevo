@@ -8,6 +8,7 @@ from population_window import PopulationWindow
 import simplejson as json
 import marshal
 import threading
+from plot_canvas import PlotCanvas
 
 
 class MainWindow(QMainWindow):
@@ -24,7 +25,7 @@ class MainWindow(QMainWindow):
     lbl_max_fitness = None
     lbl_med_fitness = None
     lbl_status = None
-
+    canvas = None
     slider = None
 
     status = 'Idle'
@@ -120,6 +121,9 @@ class MainWindow(QMainWindow):
         self.lbl_status = QLabel('Status: ' + self.status)
         grid.addWidget(self.lbl_status, 5, 2)
 
+        self.canvas = PlotCanvas()
+        grid.addWidget(self.canvas, 8, 1, 1, 3)
+
         self.show_info()
 
         self.move(100, 100)
@@ -152,6 +156,10 @@ class MainWindow(QMainWindow):
         generations = json.loads(text)
         self.generations = list(map(lambda gen: Generation.from_hash(gen), generations))
         self.training_generation = self.generations[-1]
+        self.current_generation = self.generations[-1]
+
+        # Update UI
+        self.update_slider()
         self.show_info()
 
         self.statusBar().showMessage("File loaded")
@@ -179,7 +187,17 @@ class MainWindow(QMainWindow):
     def closeEvent(self, event):
         sys.exit(0)
 
-    def show_info(self):
+    def plot(self):
+        plots = [{
+            "title": "Best fitness",
+            "data": list(map(lambda gen: gen.best_fitness if gen.trained else None, self.generations))
+        }, {
+            "title": "Average fitness",
+            "data": list(map(lambda gen: gen.avg_fitness if gen.trained else None, self.generations))
+        }]
+        self.canvas.plot(plots)
+
+    def show_info(self, plot=False):
         generation = self.current_generation
         gen_number = 0 if generation is None else generation.generation_number
         self.lbl_gen.setText('Generation: #' + str(gen_number))
@@ -195,6 +213,9 @@ class MainWindow(QMainWindow):
         self.lbl_med_fitness.setText('Median fitness: ' + str(avg_fitness))
 
         self.lbl_status.setText('Status: ' + self.status)
+
+        if plot:
+            self.plot()
 
     def test_1_generation(self):
         self.status = 'Training'
@@ -212,7 +233,7 @@ class MainWindow(QMainWindow):
             self.generations.append(new_gen)
             self.slider.setMaximum(len(self.generations) - 1)
             self.slider.setValue(len(self.generations) - 1)
-            self.show_info()
+            self.show_info(plot=True)
 
     def on_train(self, model):
         self.show_info()
@@ -226,7 +247,7 @@ class MainWindow(QMainWindow):
         self.training_generation = new_gen
         self.generations.append(new_gen)
         self.update_slider()
-        self.show_info()
+        self.show_info(plot=True)
 
     def initPopulation(self):
         self.training_generation = Generation()
@@ -250,7 +271,7 @@ class MainWindow(QMainWindow):
             self.training_generation = new_gen
             self.generations.append(new_gen)
             self.update_slider()
-            self.show_info()
+            self.show_info(plot=True)
         self.statusBar().showMessage("Training stopped")
 
     def update_slider(self):
