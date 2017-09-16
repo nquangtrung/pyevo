@@ -89,7 +89,6 @@ class TesterWindow(QWidget):
         self.lbl_model.setFixedSize(150, 150)
 
     def on_update(self):
-        print('on_update')
         self.show_info()
 
     def kill(self):
