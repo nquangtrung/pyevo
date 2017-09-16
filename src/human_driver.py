@@ -11,6 +11,7 @@ class HumanDriver:
     time = 0
     is_hit = False
     environment = None
+    limit = 10
 
     def __init__(self):
         pass
@@ -22,6 +23,9 @@ class HumanDriver:
     def moved(self, length, time):
         self.time += time
         self.fitness += length - self.time_penalty * time
+
+    def set_limit(self, limit):
+        self.limit = limit
 
     def see(self, screen):
         red = 255, 0, 0
@@ -43,16 +47,6 @@ class HumanDriver:
                         x = int(screen.get_width() / 2)
                         y = int(screen.get_height() / 2)
                         pygame.draw.circle(screen, color, (x + dx, y - dy), 5, 3)
-
-        # render text
-        if screen is not None:
-            myfont = pygame.font.SysFont("monospace", 15)
-            label = myfont.render("Fitness: " + str(self.fitness), 1, (0, 255, 0))
-            screen.blit(label, (0, 40))
-            label = myfont.render("Time: " + str(self.time), 1, (0, 255, 0))
-            screen.blit(label, (0, 60))
-            label = myfont.render("is_hit: " + str(self.is_hit), 1, (0, 255, 0))
-            screen.blit(label, (0, 80))
 
     def hit(self):
         self.is_hit = True

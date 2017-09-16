@@ -6,12 +6,18 @@ class PygameWidget(QWidget):
     data = None
     image = None
 
-    def __init__(self, surface, parent=None):
+    def __init__(self, surface=None, parent=None):
         super(PygameWidget, self).__init__(parent)
         self.surface = surface
         self.update()
 
+    def set_surface(self, surface):
+        self.surface = surface
+
     def update(self):
+        if self.surface is None:
+            return
+
         surface = self.surface
 
         w = surface.get_width()

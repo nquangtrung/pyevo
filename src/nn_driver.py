@@ -20,7 +20,7 @@ class NNDriver(HumanDriver):
         if output[3]:
             self.car.decelerate()
 
-        if self.time > 10 or self.is_hit:
+        if self.time > self.limit > 0 or self.is_hit:
             return True
         else:
             return super(NNDriver, self).control()

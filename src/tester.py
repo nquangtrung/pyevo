@@ -26,6 +26,10 @@ class Tester:
     screen = None
     window = None
 
+    track = None
+    car = None
+    driver = None
+
     def __init__(self, model):
         self.model = model
         pygame.init()
@@ -40,64 +44,80 @@ class Tester:
 
         return self.execute(show=False, interval=0.1)
 
-    def show(self):
-        self.execute(show=True)
+    def show(self, on_update=None):
+        self.execute(show=True, on_update=on_update)
 
     def init(self, window):
-        self.screen = pygame.Surface((640, 480))
+        self.screen = pygame.Surface(window.get_available_size())
         self.screen.fill(black)
 
         self.window = window
-        self.window.surface(self.screen)
         self.window.loop(self)
         self.window.update()
 
-    def execute(self, show=True, interval=0):
+        self.init_car(self.model)
+        self.frame(0, True, on_update=window.on_update)
+
+    def run(self, show=True, interval=0, on_update=None):
+        self.execute(show=show, interval=interval, limit=0, on_update=on_update)
+
+    def reset(self):
+        self.stop()
+        self.init_car(self.model)
+        self.frame(0, True)
+
+    def init_car(self, model):
+        track_id = 2
+        self.track = Track(tracks[track_id]["filepath"], tracks[track_id]["start_point"])
+        self.car = Car()
+        self.track.add_car(self.car)
+        self.driver = NNDriver(model)
+        self.driver.drive(self.car)
+
+    def frame(self, diff, show, on_update=None):
+        screen = self.screen
+
+        if show:
+            screen.fill(black)
+
+        # Update and draw the new state of the car
+        self.car.update(diff)
+        if show:
+            self.car.draw(screen, red, green)
+
+        # Check the game's logic
+        self.car.check_hit(screen)
+        self.driver.see(screen)
+        finish = self.driver.control()
+
+        if show:
+            self.window.update()
+
+        if on_update is not None:
+            on_update()
+
+        return finish
+
+    def execute(self, show=True, interval=0, limit=10, on_update=None):
         self.testing = True
 
         model = self.model
-        if show:
-            screen = self.screen
-        else:
-            screen = None
+        self.driver.set_limit(limit)
 
-        track_id = 2
-        track = Track(tracks[track_id]["filepath"], tracks[track_id]["start_point"])
-        car = Car()
-        track.add_car(car)
-        driver = NNDriver(model)
-        driver.drive(car)
         s = time.time()
-
         while self.testing:
             diff = time.time() - s
             s = time.time()
-            if show:
-                screen.fill(black)
-
             diff = interval if interval > 0 else diff
-            # Update and draw the new state of the car
-            car.update(diff)
-            if show:
-                car.draw(screen, red, green)
 
-            # Check the game's logic
-            car.check_hit(screen)
-            driver.see(screen)
-            finish = driver.control()
-
-            if show:
-                my_font = pygame.font.SysFont("monospace", 15)
-                label = my_font.render("Generation #" + str(model.generation) + " Specimen #" + str(model.specimen), 1, (0, 255, 0))
-                screen.blit(label, (0, 100))
-                self.window.update()
+            finish = self.frame(diff, show, on_update=on_update)
 
             if finish:
                 if not show:
-                    model.fitness = driver.fitness
-                    model.time = driver.time
+                    model.fitness = self.driver.fitness
+                    model.time = self.driver.time
                     model.trained = True
 
                 break
 
-        return driver.fitness, model.time
+        return self.driver.fitness, self.driver.time

@@ -108,10 +108,3 @@ class Car:
         pygame.draw.line(screen, color, top_right, bot_right, 1)
         pygame.draw.line(screen, color, bot_right, bot_left, 1)
         pygame.draw.line(screen, color, top_left, bot_left, 1)
-
-        # render text
-        myfont = pygame.font.SysFont("monospace", 15)
-        label = myfont.render("Speed: " + str(self.velocity), 1, (255, 255, 0))
-        screen.blit(label, (0, 0))
-        label = myfont.render("Steering: " + str(self.steering), 1, (255, 255, 0))
-        screen.blit(label, (0, 20))
