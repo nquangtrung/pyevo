@@ -1,6 +1,7 @@
 import sys, os
 sys.path.append(os.path.abspath(os.path.join('..')))
-from PyQt5.QtWidgets import (QWidget, QGridLayout, QLabel, QMainWindow,
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import (QWidget, QGridLayout, QLabel, QMainWindow, QSlider,
                              QPushButton, QApplication, QAction, QFileDialog)
 from generation import Generation
 from population_window import PopulationWindow
@@ -10,6 +11,7 @@ import threading
 
 
 class MainWindow(QMainWindow):
+    training_generation = None
     current_generation = None
     generations = []
 
@@ -22,6 +24,8 @@ class MainWindow(QMainWindow):
     lbl_max_fitness = None
     lbl_med_fitness = None
     lbl_status = None
+
+    slider = None
 
     status = 'Idle'
 
@@ -76,6 +80,14 @@ class MainWindow(QMainWindow):
         btn_train_10_gen.clicked.connect(self.test_10_generation)
         grid.addWidget(btn_train_10_gen, 4, 1)
 
+        btn_train = QPushButton('Train')
+        btn_train.clicked.connect(self.train)
+        grid.addWidget(btn_train, 1, 3)
+
+        btn_stop = QPushButton('Stop')
+        btn_stop.clicked.connect(self.stop)
+        grid.addWidget(btn_stop, 2, 3)
+
         btn_kill = QPushButton('Kill bad specimen')
         btn_kill.clicked.connect(self.kill)
         grid.addWidget(btn_kill, 5, 1)
@@ -83,6 +95,15 @@ class MainWindow(QMainWindow):
         btn_reproduce = QPushButton('Reproduce new generation')
         btn_reproduce.clicked.connect(self.reproduce)
         grid.addWidget(btn_reproduce, 6, 1)
+
+        self.slider = QSlider(Qt.Horizontal)
+        self.slider.setFocusPolicy(Qt.StrongFocus)
+        self.slider.setTickPosition(QSlider.TicksBelow)
+        self.slider.setTickInterval(10)
+        self.slider.setMaximum(0)
+        self.slider.setSingleStep(1)
+        self.slider.valueChanged.connect(self.changeGeneration)
+        grid.addWidget(self.slider, 7, 1, 1, 3)
 
         self.lbl_gen = QLabel('Generation: ')
         grid.addWidget(self.lbl_gen, 1, 2)
@@ -105,6 +126,11 @@ class MainWindow(QMainWindow):
         self.setWindowTitle('Training')
         self.show()
 
+    def changeGeneration(self):
+        slider = self.sender()
+        self.current_generation = self.generations[slider.value()]
+        self.show_info()
+
     def save(self, file_name):
         self.statusBar().showMessage("Saving generations at: " + file_name)
         generations = list(map(lambda gen: gen.to_hash(), self.generations))
@@ -125,7 +151,7 @@ class MainWindow(QMainWindow):
 
         generations = json.loads(text)
         self.generations = list(map(lambda gen: Generation.from_hash(gen), generations))
-        self.current_generation = self.generations[-1]
+        self.training_generation = self.generations[-1]
         self.show_info()
 
         self.statusBar().showMessage("File loaded")
@@ -154,17 +180,18 @@ class MainWindow(QMainWindow):
         sys.exit(0)
 
     def show_info(self):
-        gen_number = 0 if self.current_generation is None else self.current_generation.generation_number
+        generation = self.current_generation
+        gen_number = 0 if generation is None else generation.generation_number
         self.lbl_gen.setText('Generation: #' + str(gen_number))
 
-        population = 0 if self.current_generation is None else self.current_generation.number()
+        population = 0 if generation is None else generation.number()
         self.lbl_specimen.setText('Population: ' + str(population))
 
-        best_fitness = 0 if self.current_generation is None else self.current_generation.max_fitness()
-        best_specimen = 0 if self.current_generation is None else self.current_generation.max_specimen()
+        best_fitness = 0 if generation is None else generation.max_fitness()
+        best_specimen = 0 if generation is None else generation.max_specimen()
         self.lbl_max_fitness.setText('Maximum fitness: ' + str(best_fitness) + ' specimen: #' + str(best_specimen))
 
-        avg_fitness = 0 if self.current_generation is None else self.current_generation.avg()
+        avg_fitness = 0 if generation is None else generation.avg()
         self.lbl_med_fitness.setText('Median fitness: ' + str(avg_fitness))
 
         self.lbl_status.setText('Status: ' + self.status)
@@ -173,41 +200,68 @@ class MainWindow(QMainWindow):
         self.status = 'Training'
         self.show_info()
 
-        self.current_generation.train(self.on_train)
+        self.training_generation.train(self.on_train)
 
         self.status = 'Done'
         self.show_info()
 
     def test_10_generation(self):
         for i in range(10):
-            new_gen = self.current_generation.next_generation(self.on_train)
-            self.current_generation = new_gen
+            new_gen = self.training_generation.next_generation(self.on_train)
+            self.training_generation = new_gen
             self.generations.append(new_gen)
+            self.slider.setMaximum(len(self.generations) - 1)
+            self.slider.setValue(len(self.generations) - 1)
             self.show_info()
 
     def on_train(self, model):
         self.show_info()
 
     def kill(self):
-        self.current_generation.kill()
+        self.training_generation.kill()
         self.show_info()
 
     def reproduce(self):
-        new_gen = self.current_generation.reproduce()
-        self.current_generation = new_gen
+        new_gen = self.training_generation.reproduce()
+        self.training_generation = new_gen
         self.generations.append(new_gen)
-
+        self.update_slider()
         self.show_info()
 
     def initPopulation(self):
-        self.current_generation = Generation()
-        self.generations.append(self.current_generation)
+        self.training_generation = Generation()
+        self.current_generation = self.training_generation
+        self.generations.append(self.training_generation)
+        self.update_slider()
         self.show_info()
 
     def showPopulation(self):
         self.population_window = PopulationWindow()
         self.population_window.set_population(self.current_generation.population)
         self.population_window.show()
+
+    training = False
+
+    def train(self):
+        self.training = True
+        self.statusBar().showMessage("Training...")
+        while self.training:
+            new_gen = self.training_generation.next_generation(self.on_train)
+            self.training_generation = new_gen
+            self.generations.append(new_gen)
+            self.update_slider()
+            self.show_info()
+        self.statusBar().showMessage("Training stopped")
+
+    def update_slider(self):
+        self.slider.setMaximum(len(self.generations) - 1)
+        if self.slider.value() == len(self.generations) - 2:
+            self.slider.setValue(len(self.generations) - 1)
+            self.current_generation = self.generations[-1]
+
+    def stop(self):
+        self.training = False
+        self.statusBar().showMessage("Will stop after this generation")
 
     def buttonClicked(self):
         pass
