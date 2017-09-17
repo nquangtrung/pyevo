@@ -16,7 +16,7 @@ class Generation:
 
     def __init__(self, population=None, generation_number=0):
         if population is None:
-            population = Population(300)
+            population = Population(10)
 
         self.generation_number = generation_number
         self.population = population

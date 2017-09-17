@@ -107,6 +107,7 @@ class TesterWindow(QWidget):
         self.show_info()
 
     def start(self):
+        self.looper.reset()
         self.looper.show(on_update=self.on_update)
 
     def stop(self):

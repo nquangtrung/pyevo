@@ -42,7 +42,7 @@ class Tester:
             # Now the result is consistent, we don't need to re-train everything
             return self.model.fitness, self.model.time
 
-        return self.execute(show=False, interval=0.1)
+        return self.execute(show=False, interval=0.03)
 
     def show(self, on_update=None):
         self.execute(show=True, on_update=on_update)
@@ -98,7 +98,7 @@ class Tester:
 
         return finish
 
-    def execute(self, show=True, interval=0, limit=10, on_update=None):
+    def execute(self, show=True, interval=0, limit=1, on_update=None):
         self.testing = True
         model = self.model
 
