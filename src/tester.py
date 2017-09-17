@@ -42,10 +42,13 @@ class Tester:
             # Now the result is consistent, we don't need to re-train everything
             return self.model.fitness, self.model.time
 
-        return self.execute(show=False, interval=0.03)
+        return self.execute(show=False, interval=0.1)
+
+    def show_train(self, on_update=None):
+        self.execute(show=True, on_update=on_update, interval=0.1)
 
     def show(self, on_update=None):
-        self.execute(show=True, on_update=on_update)
+        self.execute(show=True, on_update=on_update, train=False)
 
     def init(self, window):
         self.screen = pygame.Surface(window.get_available_size())
@@ -59,7 +62,7 @@ class Tester:
         self.frame(0, True, on_update=window.on_update)
 
     def run(self, show=True, interval=0, on_update=None):
-        self.execute(show=show, interval=interval, limit=0, on_update=on_update)
+        self.execute(show=show, train=False, interval=interval, limit=0, on_update=on_update)
 
     def reset(self):
         self.stop()
@@ -98,7 +101,7 @@ class Tester:
 
         return finish
 
-    def execute(self, show=True, interval=0, limit=1, on_update=None):
+    def execute(self, show=True, train=True, interval=0, limit=1, on_update=None):
         self.testing = True
         model = self.model
 
@@ -119,7 +122,7 @@ class Tester:
             finish = self.frame(diff, show, on_update=on_update)
 
             if finish:
-                if not show:
+                if train:
                     model.fitness = self.driver.fitness
                     model.time = self.driver.time
                     model.trained = True

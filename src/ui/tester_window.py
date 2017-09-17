@@ -57,9 +57,13 @@ class TesterWindow(QWidget):
         btn_kill.clicked.connect(self.kill)
         grid.addWidget(btn_kill, 1, 5)
 
-        btn_kill = QPushButton('Resurrect')
-        btn_kill.clicked.connect(self.resurrect)
-        grid.addWidget(btn_kill, 1, 6)
+        btn_resurrect = QPushButton('Resurrect')
+        btn_resurrect.clicked.connect(self.resurrect)
+        grid.addWidget(btn_resurrect, 1, 6)
+
+        btn_show_train = QPushButton('Show Train')
+        btn_show_train.clicked.connect(self.show_train)
+        grid.addWidget(btn_show_train, 1, 6)
 
         self.lbl_model = QLabel('')
         grid.addWidget(self.lbl_model, 2, 7, 1, 1, Qt.AlignTop)
@@ -75,6 +79,8 @@ class TesterWindow(QWidget):
         text += '+ Generation: ' + str(self.looper.model.generation) + '\n'
         text += '+ Specimen: ' + str(self.looper.model.specimen) + '\n'
         text += '+ Dead: ' + str(self.looper.model.dead) + '\n'
+        text += '+ Fitness: ' + str(self.looper.model.fitness) + '\n'
+        text += '+ Time: ' + str(self.looper.model.time) + '\n'
 
         text += 'Driver: \n'
         text += '+ Fitness: ' + str(self.looper.driver.fitness) + '\n'
@@ -86,7 +92,7 @@ class TesterWindow(QWidget):
         text += '+ Steering: ' + str(self.looper.car.steering) + '\n'
 
         self.lbl_model.setText(text)
-        self.lbl_model.setFixedSize(150, 150)
+        self.lbl_model.setFixedSize(150, 175)
 
     def on_update(self):
         self.show_info()
@@ -100,11 +106,16 @@ class TesterWindow(QWidget):
         self.show_info()
 
     def run(self):
+        self.looper.reset()
         self.looper.run(on_update=self.on_update)
 
     def reset(self):
         self.looper.reset()
         self.show_info()
+
+    def show_train(self):
+        self.looper.reset()
+        self.looper.show_train(on_update=self.on_update)
 
     def start(self):
         self.looper.reset()
