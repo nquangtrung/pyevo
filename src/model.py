@@ -73,7 +73,13 @@ class Model:
         text_file.write(text)
         text_file.close()
 
-    def to_hash(self):
+    def to_hash(self, ref=True, generation=0):
+        if ref and not generation == self.generation:
+            return {
+                "g": self.generation,
+                "s": self.specimen
+            }
+
         json_params = {}
         if not self.dead:
             for l in range(self.layer_num):
@@ -100,6 +106,10 @@ class Model:
 
     @staticmethod
     def from_hash(h):
+        if 'l' not in h:
+            # We have reference here, and we don't have to create it
+            return h
+
         layer_num = h['l']
         params = {}
         if not h["d"]:

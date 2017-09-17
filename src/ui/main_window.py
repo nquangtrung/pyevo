@@ -141,9 +141,9 @@ class MainWindow(QMainWindow):
         self.current_generation = self.generations[slider.value()]
         self.show_info()
 
-    def save(self, file_name, generations):
+    def save(self, file_name, generations, ref=True):
         self.statusBar().showMessage("Saving generations at: " + file_name)
-        generations = list(map(lambda gen: gen.to_hash(), generations))
+        generations = list(map(lambda gen: gen.to_hash(ref=ref), generations))
 
         text = json.dumps(generations)
         print('Size: ' + str(len(text)))
@@ -160,19 +160,30 @@ class MainWindow(QMainWindow):
 
         generations = json.loads(text)
         self.generations = list(map(lambda gen: Generation.from_hash(gen), generations))
+        for i in range(len(generations)):
+            generation = self.generations[i]
+            for j in range(generation.population.max_population):
+                model = generation.population.specimen(j)
+                if isinstance(model, dict):
+                    obj = self.generations[model["g"]].population.specimen(model["s"])
+                    generation.population.set_specimen(j, obj)
+
+            generation.set_best_fitness()
+
         self.training_generation = self.generations[-1]
         self.current_generation = self.generations[-1]
 
         # Update UI
         self.update_slider()
         self.show_info(plot=True)
+        self.slider.setValue(len(self.generations) - 1)
 
         # self.statusBar().showMessage("File loaded")
 
     def saveEvent(self, event):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
-        file_name, _ = QFileDialog.getSaveFileName(self, "QFileDialog.getSaveFileName()", "","Neural Network Files (*.nn)", options=options)
+        file_name, _ = QFileDialog.getSaveFileName(self, "QFileDialog.getSaveFileName()", "", "Neural Network Files (*.nn)", options=options)
         if file_name:
             t = threading.Thread(target=self.save, args=(file_name, self.generations))
             t.start()
@@ -182,9 +193,9 @@ class MainWindow(QMainWindow):
     def saveCurrentGenerationEvent(self, event):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
-        file_name, _ = QFileDialog.getSaveFileName(self, "QFileDialog.getSaveFileName()", "","Neural Network Files (*.nn)", options=options)
+        file_name, _ = QFileDialog.getSaveFileName(self, "QFileDialog.getSaveFileName()", "", "Neural Network Files (*.nn)", options=options)
         if file_name:
-            t = threading.Thread(target=self.save, args=(file_name, [self.current_generation]))
+            t = threading.Thread(target=self.save, args=(file_name, [self.current_generation], False))
             t.start()
         else:
             self.statusBar().showMessage("Save cancelled")

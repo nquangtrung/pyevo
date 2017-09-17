@@ -19,6 +19,8 @@ tracks = [
     {"filepath": "../images/track-02.png", "start_point": (90, 455)}
 ]
 
+INTERVAL = 0.03
+
 
 class Tester:
     model = None
@@ -42,10 +44,10 @@ class Tester:
             # Now the result is consistent, we don't need to re-train everything
             return self.model.fitness, self.model.time
 
-        return self.execute(show=False, interval=0.1)
+        return self.execute(show=False, interval=INTERVAL)
 
     def show_train(self, on_update=None):
-        self.execute(show=True, on_update=on_update, interval=0.1)
+        self.execute(show=True, on_update=on_update, interval=INTERVAL)
 
     def show(self, on_update=None):
         self.execute(show=True, on_update=on_update, train=False)

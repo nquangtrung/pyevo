@@ -73,15 +73,23 @@ class Generation:
         return Generation(population=self.population.reproduce(self.generation_number + 1),
                           generation_number=self.generation_number + 1)
 
-    def to_hash(self):
+    def to_hash(self, ref=True):
         print("Dumping generation #" + str(self.generation_number) + " to hash")
         return {
-            "p": self.population.to_hash(),
+            "p": self.population.to_hash(ref=ref, generation=self.generation_number),
             "b": self.best_fitness,
             "a": self.avg_fitness,
             "g": self.generation_number,
             "t": self.trained
         }
+
+    def set_best_fitness(self):
+        for i in range(self.population.max_population):
+            model = self.population.specimen(i)
+            fitness = model.fitness
+            if fitness > self.best_fitness:
+                self.best_fitness = fitness
+                self.best_specimen = model
 
     @staticmethod
     def from_hash(h):
@@ -92,13 +100,6 @@ class Generation:
         gen.best_fitness = h["b"]
         gen.avg_fitness = h["a"]
         gen.trained = h["t"]
-
-        for i in range(gen.population.max_population):
-            model = gen.population.specimen(i)
-            fitness = model.fitness
-            if fitness > gen.best_fitness:
-                gen.best_fitness = fitness
-                gen.best_specimen = model
 
         return gen
 

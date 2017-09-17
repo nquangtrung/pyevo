@@ -18,6 +18,9 @@ class Population:
         self.specimens = specimens
         self.max_population = len(specimens)
 
+    def set_specimen(self, index, specimen):
+        self.specimens[index] = specimen
+
     def specimen(self, index):
         return self.specimens[index]
 
@@ -39,10 +42,8 @@ class Population:
     def is_fill(self):
         return self.population() == self.max_population
 
-    def to_hash(self):
-        models = []
-        for i in range(self.max_population):
-            models.append(self.specimen(i).to_hash())
+    def to_hash(self, ref=True, generation=0):
+        models = list(map(lambda model: model.to_hash(ref=ref, generation=generation), self.specimens))
 
         return {
             "p": self.max_population,
