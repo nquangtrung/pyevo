@@ -17,7 +17,7 @@ class NNDriver(HumanDriver):
         self.limit = limit
         self.current_limit = limit
 
-    def control(self, forever=True):
+    def control(self, forever=False):
         output = self.model.forward_prop(self.environment) > 0.5
         if output[0]:
             self.car.steer(15)
