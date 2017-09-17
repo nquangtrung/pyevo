@@ -35,20 +35,21 @@ class Generation:
 
     def train(self, cb=None):
         total = 0
+        self.best_specimen = self.population.specimen(0)
         for i in range(self.population.max_population):
             model = self.population.specimen(i)
             test = Tester(model)
             fitness, time = test.test()
 
             total += fitness
-            if fitness > self.best_fitness:
+            if fitness > self.best_specimen.fitness:
                 self.best_fitness = fitness
                 self.best_specimen = model
 
             print("Trained gen #" + str(self.generation_number)
                   + " specimen " + str(model.specimen)
-                  + " fitness: " + str(model.fitness)
-                  + " time: " + str(model.time))
+                  + " fitness: " + str(round(model.fitness, 3))
+                  + " time: " + str(round(model.time, 3)))
 
             if cb is not None:
                 cb(model)
@@ -93,7 +94,6 @@ class Generation:
             model = self.population.specimen(i)
             fitness = model.fitness
             if abs(fitness - self.best_fitness) < 10e-6:
-                # self.best_fitness = fitness
                 self.best_specimen = model
 
     @staticmethod

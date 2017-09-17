@@ -29,7 +29,7 @@ class Population:
         print("We will kill " + str(int(self.max_population * ratio)) + " specimens")
         for i in range(int(self.max_population * ratio)):
             model = s[i]
-            print('Kill ' + str(model.specimen) + ' fitness: ' + str(model.fitness))
+            print('Kill ' + str(model.specimen) + ' fitness: ' + str(round(model.fitness, 3)))
             s[i].dead = True
 
     def reproduce(self, next_gen):

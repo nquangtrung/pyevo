@@ -79,12 +79,12 @@ class TesterWindow(QWidget):
         text += '+ Generation: ' + str(self.looper.model.generation) + '\n'
         text += '+ Specimen: ' + str(self.looper.model.specimen) + '\n'
         text += '+ Dead: ' + str(self.looper.model.dead) + '\n'
-        text += '+ Fitness: ' + str(self.looper.model.fitness) + '\n'
-        text += '+ Time: ' + str(self.looper.model.time) + '\n'
+        text += '+ Fitness: ' + str(round(self.looper.model.fitness, 3)) + '\n'
+        text += '+ Time: ' + str(round(self.looper.model.time, 3)) + '\n'
 
         text += 'Driver: \n'
-        text += '+ Fitness: ' + str(self.looper.driver.fitness) + '\n'
-        text += '+ Time: ' + str(self.looper.driver.time) + '\n'
+        text += '+ Fitness: ' + str(round(self.looper.driver.fitness, 3)) + '\n'
+        text += '+ Time: ' + str(round(self.looper.driver.time, 3)) + '\n'
         text += '+ Hit: ' + str(self.looper.driver.is_hit) + '\n'
 
         text += 'Car: \n'
