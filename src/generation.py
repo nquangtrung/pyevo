@@ -78,17 +78,22 @@ class Generation:
         return {
             "p": self.population.to_hash(ref=ref, generation=self.generation_number),
             "b": self.best_fitness,
+            "bm": self.best_specimen.specimen,
             "a": self.avg_fitness,
             "g": self.generation_number,
             "t": self.trained
         }
 
     def set_best_fitness(self):
+        if self.best_specimen is not None:
+            self.best_specimen = self.population.specimen(self.best_specimen)
+            return
+
         for i in range(self.population.max_population):
             model = self.population.specimen(i)
             fitness = model.fitness
-            if fitness > self.best_fitness:
-                self.best_fitness = fitness
+            if abs(fitness - self.best_fitness) < 10e-6:
+                # self.best_fitness = fitness
                 self.best_specimen = model
 
     @staticmethod
@@ -98,6 +103,8 @@ class Generation:
         gen = Generation(population=population, generation_number=generation_number)
 
         gen.best_fitness = h["b"]
+        if 'bm' in h:
+            gen.best_specimen = h['bm']
         gen.avg_fitness = h["a"]
         gen.trained = h["t"]
 

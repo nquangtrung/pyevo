@@ -232,10 +232,10 @@ class MainWindow(QMainWindow):
 
         best_fitness = 0 if generation is None else generation.max_fitness()
         best_specimen = 0 if generation is None else generation.max_specimen()
-        self.lbl_max_fitness.setText('Maximum fitness: ' + str(best_fitness) + ' specimen: #' + str(best_specimen))
+        self.lbl_max_fitness.setText('Best fitness: ' + str(best_fitness) + ' specimen: #' + str(best_specimen))
 
         avg_fitness = 0 if generation is None else generation.avg()
-        self.lbl_med_fitness.setText('Median fitness: ' + str(avg_fitness))
+        self.lbl_med_fitness.setText('Average fitness: ' + str(avg_fitness))
 
         self.lbl_status.setText('Status: ' + self.status)
 
