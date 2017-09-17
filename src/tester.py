@@ -63,7 +63,7 @@ class Tester:
         self.init_car(self.model)
         self.frame(0, True, on_update=window.on_update)
 
-    def run(self, show=True, interval=0, on_update=None):
+    def run(self, show=True, interval=INTERVAL, on_update=None):
         self.execute(show=show, train=False, interval=interval, limit=0, on_update=on_update)
 
     def reset(self):
