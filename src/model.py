@@ -82,42 +82,42 @@ class Model:
 
         return {
             # NN info
-            "input_shape": self.input_shape,
-            "layer_num": self.layer_num,
-            "hidden_unit_num": self.hidden_unit_num,
-            "params": json_params,
+            "i": self.input_shape,
+            "l": self.layer_num,
+            "h": self.hidden_unit_num,
+            "p": json_params,
 
             # Model's train status
-            "fitness": self.fitness,
-            "time": self.time,
-            "dead": self.dead,
-            "trained": self.trained,
+            "f": self.fitness,
+            "t": self.time,
+            "d": self.dead,
+            "tr": self.trained,
 
             # Generation info
-            "generation": self.generation,
-            "specimen": self.specimen
+            "g": self.generation,
+            "s": self.specimen
         }
 
     @staticmethod
     def from_hash(h):
-        layer_num = h['layer_num']
+        layer_num = h['l']
         params = {}
-        if not h["dead"]:
+        if not h["d"]:
             for l in range(layer_num):
-                params["W" + str(l)] = np.array(h["params"]["W" + str(l)])
-                params["b" + str(l)] = np.array(h["params"]["b" + str(l)])
+                params["W" + str(l)] = np.array(h["p"]["W" + str(l)])
+                params["b" + str(l)] = np.array(h["p"]["b" + str(l)])
 
-        model = Model(input_shape=tuple(h["input_shape"]), hidden_unit_num=h['hidden_unit_num'], params=params)
+        model = Model(input_shape=tuple(h["i"]), hidden_unit_num=h['h'], params=params)
 
         # Model's train status
-        model.fitness = h["fitness"]
-        model.time = h["time"]
-        model.dead = h["dead"]
-        model.trained = h["trained"]
+        model.fitness = h["f"]
+        model.time = h["t"]
+        model.dead = h["d"]
+        model.trained = h["tr"]
 
         # Generation info
-        model.generation = h["generation"]
-        model.specimen = h["specimen"]
+        model.generation = h["g"]
+        model.specimen = h["s"]
 
         return model
 

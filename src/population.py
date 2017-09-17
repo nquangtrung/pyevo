@@ -45,15 +45,15 @@ class Population:
             models.append(self.specimen(i).to_hash())
 
         return {
-            "max_population": self.max_population,
-            "models": models
+            "p": self.max_population,
+            "m": models
         }
 
     @staticmethod
     def from_hash(h):
         specimens = []
-        for i in range(len(h["models"])):
-            specimens.append(Model.from_hash(h["models"][i]))
+        for i in range(len(h["m"])):
+            specimens.append(Model.from_hash(h["m"][i]))
 
         return Population(specimens=specimens)
 
