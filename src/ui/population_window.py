@@ -21,8 +21,11 @@ class PopulationWindow(QWidget):
         self.setLayout(grid)
 
         col = 15
-        for i in range(population.max_population):
-            model = population.specimen(i)
+
+        # ordered = population.specimens
+        ordered = sorted(population.specimens, key=lambda x: x.fitness, reverse=True)
+        for i in range(len(ordered)):
+            model = ordered[i]
             dead = " (Dead)" if model.dead else (" (" + str(round(model.fitness, 3)) + ")") if model.trained else ""
             btn_show = QPushButton("#" + str(model.generation) + "." + str(model.specimen) + dead)
             btn_show.specimen = model
