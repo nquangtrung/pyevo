@@ -47,7 +47,7 @@ class Tester:
         return self.execute(show=False, interval=INTERVAL)
 
     def show_train(self, on_update=None):
-        self.execute(show=True, on_update=on_update, interval=INTERVAL)
+        self.execute(show=True, on_update=on_update, train=False, interval=INTERVAL)
 
     def show(self, on_update=None):
         self.execute(show=True, on_update=on_update, train=False)

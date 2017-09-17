@@ -2,7 +2,7 @@ import sys, os
 sys.path.append(os.path.abspath(os.path.join('..')))
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (QWidget, QGridLayout, QLabel, QMainWindow, QSlider,
-                             QPushButton, QApplication, QAction, QFileDialog)
+                             QPushButton, QApplication, QAction, QFileDialog, QCheckBox)
 from generation import Generation
 from population_window import PopulationWindow
 import simplejson as json
@@ -27,6 +27,9 @@ class MainWindow(QMainWindow):
     lbl_status = None
     canvas = None
     slider = None
+
+    chk_plot_best = None
+    chk_plot_avg = None
 
     status = 'Idle'
 
@@ -127,14 +130,27 @@ class MainWindow(QMainWindow):
         self.lbl_status = QLabel('Status: ' + self.status)
         grid.addWidget(self.lbl_status, 5, 2)
 
+        self.chk_plot_best = QCheckBox("Best fitness")
+        self.chk_plot_best.setChecked(True)
+        self.chk_plot_best.stateChanged.connect(self.update_plot)
+        grid.addWidget(self.chk_plot_best, 8, 1)
+
+        self.chk_plot_avg = QCheckBox("Average fitness")
+        self.chk_plot_avg.setChecked(True)
+        self.chk_plot_avg.stateChanged.connect(self.update_plot)
+        grid.addWidget(self.chk_plot_avg, 8, 2)
+
         self.canvas = PlotCanvas()
-        grid.addWidget(self.canvas, 8, 1, 1, 3)
+        grid.addWidget(self.canvas, 9, 1, 1, 3)
 
         self.show_info()
 
         self.move(100, 100)
         self.setWindowTitle('Training')
         self.show()
+
+    def update_plot(self):
+        self.plot()
 
     def changeGeneration(self):
         slider = self.sender()
@@ -214,11 +230,19 @@ class MainWindow(QMainWindow):
         sys.exit(0)
 
     def plot(self):
-        plots = [{
-            "data": list(map(lambda gen: gen.best_fitness if gen.trained else None, self.generations))
-        }, {
-            "data": list(map(lambda gen: gen.avg_fitness if gen.trained else None, self.generations))
-        }]
+        if self.canvas is None:
+            return
+
+        plots = []
+        if self.chk_plot_best.isChecked():
+            plots.append({
+                "data": list(map(lambda gen: gen.best_fitness if gen.trained else None, self.generations))
+            })
+
+        if self.chk_plot_avg.isChecked():
+            plots.append({
+                "data": list(map(lambda gen: gen.avg_fitness if gen.trained else None, self.generations))
+            })
 
         self.canvas.plot(plots)
 

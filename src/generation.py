@@ -79,7 +79,7 @@ class Generation:
         return {
             "p": self.population.to_hash(ref=ref, generation=self.generation_number),
             "b": self.best_fitness,
-            "bm": self.best_specimen.specimen,
+            "bm": 0 if self.best_specimen is None else self.best_specimen.specimen,
             "a": self.avg_fitness,
             "g": self.generation_number,
             "t": self.trained
