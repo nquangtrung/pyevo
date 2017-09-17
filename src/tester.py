@@ -79,7 +79,7 @@ class Tester:
         self.driver = NNDriver(model)
         self.driver.drive(self.car)
 
-    def frame(self, diff, show, on_update=None):
+    def frame(self, diff, show, on_update=None, train=True):
         screen = self.screen
 
         if show:
@@ -93,7 +93,7 @@ class Tester:
         # Check the game's logic
         self.car.check_hit(screen)
         self.driver.see(screen)
-        finish = self.driver.control()
+        finish = self.driver.control(forever=(not train))
 
         if show:
             self.window.update()
@@ -121,7 +121,7 @@ class Tester:
             s = time.time()
             diff = interval if interval > 0 else diff
 
-            finish = self.frame(diff, show, on_update=on_update)
+            finish = self.frame(diff, show, on_update=on_update, train=train)
 
             if finish:
                 if train:

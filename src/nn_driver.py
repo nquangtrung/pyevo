@@ -17,7 +17,7 @@ class NNDriver(HumanDriver):
         self.limit = limit
         self.current_limit = limit
 
-    def control(self):
+    def control(self, forever=True):
         output = self.model.forward_prop(self.environment) > 0.5
         if output[0]:
             self.car.steer(15)
@@ -27,6 +27,10 @@ class NNDriver(HumanDriver):
             self.car.accelerate()
         if output[3]:
             self.car.decelerate()
+
+        if self.time > 30 and not forever:
+            # It's enough for training
+            return True
 
         if self.time > self.current_limit > 0 or self.is_hit:
             if self.fitness < self.current_limit_threshold:
