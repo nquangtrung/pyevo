@@ -91,7 +91,7 @@ class Breeder:
 
     @staticmethod
     def random_model_params():
-        layer_number = randint(3, 10)
+        layer_number = 3  # randint(3, 10)
         hidden_unit_num = []
         for i in range(layer_number - 1):
             hidden_unit_num.append(randint(5, 20))
