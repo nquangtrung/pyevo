@@ -19,9 +19,11 @@ class Car:
 
     def accelerate(self):
         self.velocity += 5
+        # self.velocity = 120 if self.velocity > 120 else self.velocity
 
     def decelerate(self):
         self.velocity -= 5
+        # self.velocity = -120 if self.velocity < -120 else self.velocity
 
     def driven_by(self, driver):
         self.driver = driver
@@ -29,6 +31,7 @@ class Car:
 
     def steer(self, deg):
         self.steering += deg
+        self.steering %= 360
 
     def update(self, time):
         length = self.velocity * time

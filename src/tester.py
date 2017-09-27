@@ -14,9 +14,55 @@ black = (0, 0, 0)
 pink = (255, 200, 200)
 
 tracks = [
-    {"name": "Track 1", "filepath": "../images/track-00.png", "start_point": (100, 440)},
-    {"name": "Track 2", "filepath": "../images/track-01.png", "start_point": (110, 425)},
-    {"name": "Track 3", "filepath": "../images/track-02.png", "start_point": (90, 455)}
+    {
+        "name": "Track 1",
+        "filepath": "../images/track-00.png",
+        "start_point": (100, 440),
+        "start_velocity": 10,
+        "start_steering": 0,
+    },
+    {
+        "name": "Track 2",
+        "filepath": "../images/track-01.png",
+        "start_point": (110, 425),
+        "start_velocity": 10,
+        "start_steering": 0,
+    },
+    {
+        "name": "Track 3",
+        "filepath": "../images/track-02.png",
+        "start_point": (90, 455),
+        "start_velocity": 0,
+        "start_steering": 0,
+    },
+    {
+        "name": "Track 4",
+        "filepath": "../images/track-03.png",
+        "start_point": (130, 275),
+        "start_velocity": 10,
+        "start_steering": 0,
+    },
+    {
+        "name": "Track 5",
+        "filepath": "../images/track-03.png",
+        "start_point": (940, 275),
+        "start_velocity": 10,
+        "start_steering": 0,
+    },
+    {
+        "name": "Track 6",
+        "filepath": "../images/track-03.png",
+        "start_point": (560, 170),
+        "start_velocity": 10,
+        "start_steering": 90,
+    },
+    {
+        "name": "Track 7",
+        "filepath": "../images/track-03.png",
+        "start_point": (560, 170),
+        "start_velocity": 10,
+        "start_steering": -90,
+    }
 ]
 
 INTERVAL = 0.03
@@ -84,8 +130,11 @@ class Tester:
 
     def init_car(self, model):
         track_id = self.track_id
-        self.track = Track(tracks[track_id]["filepath"], tracks[track_id]["start_point"])
+        track = tracks[track_id]
+        self.track = Track(track["filepath"], track["start_point"])
         self.car = Car()
+        self.car.velocity = track["start_velocity"]
+        self.car.steering = track["start_steering"]
         self.track.add_car(self.car)
         self.driver = NNDriver(model)
         self.driver.drive(self.car)

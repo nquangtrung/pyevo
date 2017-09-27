@@ -98,6 +98,8 @@ class TesterWindow(QWidget):
         text += '+ Dead: ' + str(self.looper.model.dead) + '\n'
         text += '+ Fitness: ' + str(round(self.looper.model.fitness, 3)) + '\n'
         text += '+ Time: ' + str(round(self.looper.model.time, 3)) + '\n'
+        text += '+ Gene: ' + str(self.looper.model.layer_num) + '\n'
+        text += str(self.looper.model.hidden_unit_num) + '\n'
 
         text += 'Driver: \n'
         text += '+ Fitness: ' + str(round(self.looper.driver.fitness, 3)) + '\n'
@@ -109,7 +111,7 @@ class TesterWindow(QWidget):
         text += '+ Steering: ' + str(self.looper.car.steering) + '\n'
 
         self.lbl_model.setText(text)
-        self.lbl_model.setFixedSize(150, 175)
+        self.lbl_model.setFixedSize(150, 210)
 
     def on_update(self):
         self.show_info()
