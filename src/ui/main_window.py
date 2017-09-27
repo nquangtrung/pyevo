@@ -181,7 +181,11 @@ class MainWindow(QMainWindow):
             for j in range(generation.population.max_population):
                 model = generation.population.specimen(j)
                 if isinstance(model, dict):
-                    obj = self.generations[model["g"]].population.specimen(model["s"])
+                    index = 0 if model["g"] - self.generations[0].generation_number < 0 else model["g"] - self.generations[0].generation_number
+
+                    obj = self.generations[index].population.specimen(model["s"])
+                    print('f ' + str(obj))
+
                     generation.population.set_specimen(j, obj)
 
             generation.set_best_fitness()
