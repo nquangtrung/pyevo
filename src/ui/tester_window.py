@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import (QSizePolicy, QWidget, QGridLayout, QPushButton, QLabel)
+from PyQt5.QtWidgets import (QSizePolicy, QWidget, QGridLayout, QPushButton, QLabel, QComboBox)
 from pygame_widget import PygameWidget
 from PyQt5.QtCore import Qt
 
@@ -7,6 +7,8 @@ class TesterWindow(QWidget):
     surface = None
     image = None
     looper = None
+    combo_box = None
+    grid = None
 
     tester = None
 
@@ -27,11 +29,26 @@ class TesterWindow(QWidget):
         self.looper = looper
         self.image.set_surface(looper.screen)
 
+        tracks = self.looper.get_tracks()
+
+        # Show combo box for selecting tracks
+        self.combo_box = QComboBox(self)
+        for i in range(len(tracks)):
+            self.combo_box.addItem(tracks[i]["name"])
+        self.combo_box.setCurrentIndex(self.looper.get_track_id())
+        self.combo_box.activated[str].connect(self.on_track_chosen)
+        self.grid.addWidget(self.combo_box, 1, 7)
+
+    def on_track_chosen(self):
+        self.looper.set_track_id(self.combo_box.currentIndex())
+        self.looper.reset()
+
     def get_available_size(self):
         return self.image.width(), self.image.height()
 
     def init_ui(self):
         grid = QGridLayout()
+        self.grid = grid
         self.setLayout(grid)
 
         self.image = PygameWidget()

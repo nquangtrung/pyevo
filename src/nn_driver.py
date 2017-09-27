@@ -37,7 +37,7 @@ class NNDriver(HumanDriver):
                 return True
             else:
                 self.current_limit = self.current_limit + self.limit
-                self.current_limit_threshold = self.fitness * 1.1
+                self.current_limit_threshold = self.fitness
                 return False
         else:
             return super(NNDriver, self).control()

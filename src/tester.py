@@ -14,9 +14,9 @@ black = (0, 0, 0)
 pink = (255, 200, 200)
 
 tracks = [
-    {"filepath": "../images/track-00.png", "start_point": (100, 440)},
-    {"filepath": "../images/track-01.png", "start_point": (110, 425)},
-    {"filepath": "../images/track-02.png", "start_point": (90, 455)}
+    {"name": "Track 1", "filepath": "../images/track-00.png", "start_point": (100, 440)},
+    {"name": "Track 2", "filepath": "../images/track-01.png", "start_point": (110, 425)},
+    {"name": "Track 3", "filepath": "../images/track-02.png", "start_point": (90, 455)}
 ]
 
 INTERVAL = 0.03
@@ -31,6 +31,8 @@ class Tester:
     track = None
     car = None
     driver = None
+
+    track_id = 2
 
     def __init__(self, model):
         self.model = model
@@ -66,13 +68,22 @@ class Tester:
     def run(self, show=True, interval=INTERVAL, on_update=None):
         self.execute(show=show, train=False, interval=interval, limit=0, on_update=on_update)
 
+    def get_tracks(self):
+        return tracks
+
+    def get_track_id(self):
+        return self.track_id
+
+    def set_track_id(self, track_id):
+        self.track_id = track_id
+
     def reset(self):
         self.stop()
         self.init_car(self.model)
         self.frame(0, True)
 
     def init_car(self, model):
-        track_id = 2
+        track_id = self.track_id
         self.track = Track(tracks[track_id]["filepath"], tracks[track_id]["start_point"])
         self.car = Car()
         self.track.add_car(self.car)

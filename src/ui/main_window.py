@@ -184,7 +184,6 @@ class MainWindow(QMainWindow):
                     index = 0 if model["g"] - self.generations[0].generation_number < 0 else model["g"] - self.generations[0].generation_number
 
                     obj = self.generations[index].population.specimen(model["s"])
-                    print('f ' + str(obj))
 
                     generation.population.set_specimen(j, obj)
 
